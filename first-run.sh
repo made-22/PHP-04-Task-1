@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # build
-#docker-compose build
+docker-compose build
 
 # run containers
-#docker-compose up -d
+docker-compose up -d
 
 # create databases
 # main DB
@@ -16,4 +16,3 @@ docker-compose exec db psql -U postgres -tc "SELECT 1 FROM pg_database WHERE dat
 docker-compose exec app composer install
 docker-compose exec app php artisan storage:link
 docker-compose exec app php artisan migrate:fresh --seed
-
