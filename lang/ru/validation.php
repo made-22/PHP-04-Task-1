@@ -112,6 +112,7 @@ return [
     'uploaded' => 'Загрузка :attribute не удалась.',
     'url' => 'Поле :attribute имеет ошибочный формат URL.',
     'uuid' => 'Поле :attribute должно быть корректным UUID.',
+    'link' => 'Поле :attribute ошибочно, :attribute неверная или не существует',
 
     'custom' => [
         'attribute-name' => [
@@ -119,6 +120,10 @@ return [
         ],
     ],
 
-    'attributes' => [],
+    'attributes' => [
+        'long_url' => 'ссылка',
+        'tags' => 'тэги',
+        'title' => 'заголовок',
+    ],
 
 ];
