@@ -1,0 +1,79 @@
+version: "3"
+
+services:
+
+    #Nginx webserver
+    webserver:
+        container_name: ${DOCKER_PROJECT_NAME}_webserver
+        tty: true
+        restart: unless-stopped
+        build:
+            context: ./
+            dockerfile: .docker/nginx/Dockerfile
+        ports:
+            - "80:80"
+        volumes:
+            - .:/var/www
+            - .docker/nginx/conf.d/:/etc/nginx/conf.d/
+        networks:
+            - app-network
+
+    # PHP service
+    app:
+        container_name: ${DOCKER_PROJECT_NAME}_app
+        tty: true
+        restart: unless-stopped
+        build:
+            context: ./
+            dockerfile: .docker/php/Dockerfile
+        working_dir: /var/www
+        volumes:
+            - .:/var/www
+            - .docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+        networks:
+            - app-network
+
+    # DB service (PostgresSQL)
+    db:
+        container_name: ${DOCKER_PROJECT_NAME}_db
+        restart: unless-stopped
+        tty: true
+        build:
+            context: ./
+            dockerfile: .docker/postgres/Dockerfile
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_DB: ${DB_DATABASE}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            SERVICE_TAGS: dev
+            SERVICE_NAME: pgsql
+        volumes:
+            - db_data:/var/lib/postgresql/data/
+        networks:
+            - app-network
+
+    # Redis service
+    redis:
+        container_name: ${DOCKER_PROJECT_NAME}_redis
+        build:
+            context: ./
+            dockerfile: .docker/redis/Dockerfile
+        volumes:
+            - redis_data:/data
+        ports:
+            - "6379:6379"
+        networks:
+            - app-network
+
+#Docker networks
+networks:
+    app-network:
+        driver: bridge
+
+#Volumes
+volumes:
+    db_data:
+        driver: local
+    redis_data:
+        driver: local
