@@ -2,18 +2,16 @@
 
 namespace Database\Seeders;
 
+use App\Models\Stat;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+class StatSeeder extends Seeder
 {
     /**
      * @return void
      */
     public function run(): void
     {
-        $this->call([
-            ShortLinkSeeder::class,
-            StatSeeder::class,
-        ]);
+        Stat::factory(30)->create();
     }
 }
