@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'cant_store_links' => 'Cant store link'
+    'cant_store_links' => 'Cant store links'
 ];

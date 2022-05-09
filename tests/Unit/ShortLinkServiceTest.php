@@ -2,13 +2,14 @@
 
 namespace Tests\Unit;
 
-use App\Exceptions\ShortLink\CantStoreShortLinksException;
 use App\Models\ShortLink;
 use App\Services\ShortLink\DTO\LinkCreateDTO;
 use App\Services\ShortLink\DTO\LinkFilterDTO;
 use App\Services\ShortLink\ShortLinkGeneratorService;
 use App\Services\ShortLink\ShortLinkService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use ReflectionClass;
+use ReflectionException;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 use Tests\TestCase;
 
@@ -50,11 +51,7 @@ class ShortLinkServiceTest extends TestCase
             ])
         ];
 
-        try {
-            resolve(ShortLinkService::class)->getGeneratedLinks($storeLinkData);
-        } catch (CantStoreShortLinksException) {
-            $this->fail();
-        }
+        resolve(ShortLinkService::class)->makeLinks($storeLinkData);
 
         $shortLinkFirst = ShortLink::findOrFail($linkDataFirst['id']);
         $shortLinkSecond = ShortLink::findOrFail($linkDataSecond['id']);
@@ -84,7 +81,7 @@ class ShortLinkServiceTest extends TestCase
 
         ShortLink::factory()->createOne($data);
 
-        $shortLinkData = resolve(ShortLinkService::class)->getLink($data['id']);
+        $shortLinkData = resolve(ShortLinkService::class)->show($data['id']);
 
         $this->assertEquals($data['id'], $shortLinkData->id);
         $this->assertEquals($data['long_url'], $shortLinkData->long_url);
@@ -104,7 +101,7 @@ class ShortLinkServiceTest extends TestCase
 
         ShortLink::factory()->createOne($data);
 
-        $shortLinkData = resolve(ShortLinkService::class)->getLinkBaseData($data['id']);
+        $shortLinkData = resolve(ShortLinkService::class)->getLinkWithBaseData($data['id']);
 
         $this->assertEquals($data['id'], $shortLinkData->id);
         $this->assertEquals($data['long_url'], $shortLinkData->long_url);
@@ -126,8 +123,8 @@ class ShortLinkServiceTest extends TestCase
             'title' => 'est'
         ]);
 
-        $shortLinkFiltered = resolve(ShortLinkService::class)->getLinks($filterDTO);
-        $shortLink = resolve(ShortLinkService::class)->getLinks(new LinkFilterDTO());
+        $shortLinkFiltered = resolve(ShortLinkService::class)->getList($filterDTO);
+        $shortLink = resolve(ShortLinkService::class)->getList(new LinkFilterDTO());
 
         $this->assertEquals(1, $shortLinkFiltered->count());
         $this->assertEquals($testTitle, $shortLinkFiltered->first()->title);
@@ -182,5 +179,65 @@ class ShortLinkServiceTest extends TestCase
         $this->assertEquals($updateData['title'], $shortLink->title);
         $this->assertEquals($updateData['long_url'], $shortLink->long_url);
         $this->assertEquals($updateData['tags'], $shortLink->tags);
+    }
+
+    /**
+     * @throws UnknownProperties
+     */
+    public function test_store_links()
+    {
+        $linkDataFirst = [
+            'id' => resolve(ShortLinkGeneratorService::class)->generate(),
+            'long_url' => 'https://google.com/',
+            'title' => 'Google',
+            'tags' => [
+                'tag1',
+                'tag2'
+            ]
+        ];
+
+        $linkDataSecond = [
+            'id' => resolve(ShortLinkGeneratorService::class)->generate(),
+            'long_url' => 'https://yandex.ru/',
+        ];
+
+        $storeLinkData = [
+            new LinkCreateDTO([
+                'longUrl' => $linkDataFirst['long_url'],
+                'shortUrl' => $linkDataFirst['id'],
+                'title' => $linkDataFirst['title'],
+                'tags' => $linkDataFirst['tags']
+            ]),
+            new LinkCreateDTO([
+                'longUrl' => $linkDataSecond['long_url'],
+                'shortUrl' => $linkDataSecond['id'],
+            ])
+        ];
+
+        try {
+            $obj = resolve(ShortLinkService::class);
+            $reflectionCls = new ReflectionClass($obj);
+            $method = $reflectionCls->getMethod('storeLinks');
+            $method->setAccessible(true);
+            $method->invokeArgs($obj, [
+                'data' => $storeLinkData
+            ]);
+
+        } catch (ReflectionException) {
+            $this->fail();
+        }
+
+        $shortLinkFirst = ShortLink::findOrFail($linkDataFirst['id']);
+        $shortLinkSecond = ShortLink::findOrFail($linkDataSecond['id']);
+
+        $this->assertDatabaseCount('short_links', 2);
+
+        $this->assertEquals($linkDataFirst['long_url'], $shortLinkFirst->long_url);
+        $this->assertEquals($linkDataFirst['title'], $shortLinkFirst->title);
+        $this->assertEquals($linkDataFirst['tags'], $shortLinkFirst->tags);
+
+        $this->assertEquals($linkDataSecond['long_url'], $shortLinkSecond->long_url);
+        $this->assertEquals(null, $shortLinkSecond->title);
+        $this->assertEquals(null, $shortLinkSecond->tags);
     }
 }

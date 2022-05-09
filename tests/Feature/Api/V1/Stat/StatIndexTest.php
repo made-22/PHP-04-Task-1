@@ -5,12 +5,13 @@ namespace Tests\Feature\Api\V1\Stat;
 use App\Models\ShortLink;
 use App\Models\Stat;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Response;
 use Tests\TestCase;
 
 class StatIndexTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithFaker;
 
     public function test_stat_index()
     {
@@ -22,7 +23,7 @@ class StatIndexTest extends TestCase
 
         Stat::factory(2)->create([
             'short_link_id' => $shortLinkId,
-            'ip' => '192.0.0.1'
+            'ip' => $this->faker->ipv4()
         ]);
 
         $response = $this->getJson(route('stats.index'));

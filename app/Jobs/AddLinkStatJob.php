@@ -28,6 +28,6 @@ class AddLinkStatJob implements ShouldQueue
      */
     public function handle(StatService $statService): void
     {
-        $statService->storeToDB($this->statData);
+        $statService->store($this->statData);
     }
 }

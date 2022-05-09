@@ -36,25 +36,25 @@ class StatService
      * @param StatAddDTO $statData
      * @return void
      */
-    public function storeToDB(StatAddDTO $statData): void
+    public function store(StatAddDTO $statData): void
     {
-        $this->repository->storeToDB($statData);
+        $this->repository->store($statData);
     }
 
     /**
      * @return Collection
      */
-    public function getStat(): Collection
+    public function get(): Collection
     {
-        return $this->repository->getStat();
+        return $this->repository->getList();
     }
 
     /**
      * @param string $id
      * @return Collection
      */
-    public function getStatByLinkId(string $id): Collection
+    public function getByLink(string $id): Collection
     {
-        return $this->repository->getStatByLinkId($id);
+        return $this->repository->getByLink($id);
     }
 }

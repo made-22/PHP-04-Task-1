@@ -6,12 +6,13 @@ use App\Models\ShortLink;
 use App\Models\Stat;
 use App\Services\ShortLink\ShortLinkGeneratorService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Response;
 use Tests\TestCase;
 
 class StatShowTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithFaker;
 
     public function test_stat_show_with_not_exist_link()
     {
@@ -27,6 +28,8 @@ class StatShowTest extends TestCase
     public function test_stat_show()
     {
         $shortLinkId = resolve(ShortLinkGeneratorService::class)->generate();
+        $ip1 = $this->faker->unique()->ipv4();
+        $ip2 = $this->faker->unique()->ipv4();
 
         ShortLink::factory()->createOne([
             'id' => $shortLinkId
@@ -35,17 +38,17 @@ class StatShowTest extends TestCase
         Stat::factory()->createMany([
             [
                 'short_link_id' => $shortLinkId,
-                'ip' => '192.0.0.1',
+                'ip' => $ip1,
                 'created_at' => '2022-01-01 10:00:00'
             ],
             [
                 'short_link_id' => $shortLinkId,
-                'ip' => '192.0.0.1',
+                'ip' => $ip1,
                 'created_at' => '2022-01-02 10:00:00'
             ],
             [
                 'short_link_id' => $shortLinkId,
-                'ip' => '192.0.0.2',
+                'ip' => $ip2,
                 'created_at' => '2022-01-02 10:20:00'
             ]
         ]);

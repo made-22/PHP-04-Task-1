@@ -10,12 +10,15 @@ use App\Services\Stat\DTO\StatAddDTO;
 use App\Services\Stat\StatService;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 use Tests\TestCase;
 
 class StatServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithFaker;
 
     /**
      * @return void
@@ -31,8 +34,8 @@ class StatServiceTest extends TestCase
 
         $statData = [
             'short_link_id' => $shortLinkId,
-            'ip' => '172.0.0.1',
-            'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_5_1 rv:5.0) Gecko/20121028 Firefox/36.0'
+            'ip' => $this->faker->ipv4(),
+            'user_agent' => $this->faker->userAgent()
         ];
 
         $statAddDTO = new StatAddDTO([
@@ -62,8 +65,8 @@ class StatServiceTest extends TestCase
 
         $statData = [
             'short_link_id' => $shortLinkId,
-            'ip' => '172.0.0.1',
-            'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_5_1 rv:5.0) Gecko/20121028 Firefox/36.0'
+            'ip' => $this->faker->ipv4(),
+            'user_agent' => $this->faker->userAgent()
         ];
 
         $statAddDTO = new StatAddDTO([
@@ -86,8 +89,8 @@ class StatServiceTest extends TestCase
     {
         $data = new StatAddDTO([
             'shortLinkId' => 'not_exist_id',
-            'ip' => '172.0.0.1',
-            'userAgent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_5_1 rv:5.0) Gecko/20121028 Firefox/36.0'
+            'ip' => $this->faker->ipv4(),
+            'userAgent' => $this->faker->userAgent()
         ]);
 
         try {
@@ -113,8 +116,8 @@ class StatServiceTest extends TestCase
 
         $statData = [
             'short_link_id' => $shortLinkId,
-            'ip' => '172.0.0.1',
-            'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_5_1 rv:5.0) Gecko/20121028 Firefox/36.0'
+            'ip' => $this->faker->unique()->ipv4(),
+            'user_agent' => $this->faker->userAgent()
         ];
 
         $statAddDTO = new StatAddDTO([
@@ -123,7 +126,7 @@ class StatServiceTest extends TestCase
             'userAgent' => $statData['user_agent']
         ]);
 
-        resolve(StatService::class)->storeToDB($statAddDTO);
+        resolve(StatService::class)->store($statAddDTO);
 
         $this->assertDatabaseCount('stats', 1);
         $this->assertDatabaseHas('stats', $statData);
@@ -131,6 +134,8 @@ class StatServiceTest extends TestCase
 
     /**
      * @return void
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function test_get_stat(): void
     {
@@ -149,26 +154,26 @@ class StatServiceTest extends TestCase
         Stat::factory(2)->createMany([
             [
                 'short_link_id' => $shortLinkId1,
-                'ip' => '192.0.0.7'
+                'ip' => $this->faker->unique()->ipv4()
             ],
             [
                 'short_link_id' => $shortLinkId2,
-                'ip' => '192.0.0.8'
+                'ip' => $this->faker->unique()->ipv4()
             ],
         ]);
 
         Stat::factory(2)->createMany([
             [
                 'short_link_id' => $shortLinkId1,
-                'ip' => '192.0.0.1'
+                'ip' => $this->faker->unique()->ipv4()
             ],
             [
                 'short_link_id' => $shortLinkId2,
-                'ip' => '192.0.0.2'
+                'ip' => $this->faker->unique()->ipv4()
             ],
         ]);
 
-        $statData = resolve(StatService::class)->getStat();
+        $statData = resolve(StatService::class)->get();
         $shortLinkFirst = $statData->where('short_link_id', $shortLinkId1);
         $shortLinkSecond = $statData->where('short_link_id', $shortLinkId2);
 
@@ -202,12 +207,12 @@ class StatServiceTest extends TestCase
         Stat::factory(2)->createMany([
             [
                 'short_link_id' => $shortLinkId1,
-                'ip' => '192.0.0.7',
+                'ip' => $this->faker->unique()->ipv4(),
                 'created_at' => '2022-01-01 10:00:00'
             ],
             [
                 'short_link_id' => $shortLinkId1,
-                'ip' => '192.0.0.8',
+                'ip' => $this->faker->unique()->ipv4(),
                 'created_at' => '2022-01-01 10:00:00'
             ],
         ]);
@@ -215,18 +220,18 @@ class StatServiceTest extends TestCase
         Stat::factory(3)->createMany([
             [
                 'short_link_id' => $shortLinkId1,
-                'ip' => '192.0.0.1',
+                'ip' => $this->faker->unique()->ipv4(),
                 'created_at' => '2022-01-02 10:00:00'
             ],
             [
                 'short_link_id' => $shortLinkId2,
-                'ip' => '192.0.0.2',
+                'ip' => $this->faker->unique()->ipv4(),
                 'created_at' => '2022-01-02 10:00:00'
             ],
         ]);
 
-        $statDataLinkIdFirst = resolve(StatService::class)->getStatByLinkId($shortLinkId1);
-        $statDataLinkIdSecond = resolve(StatService::class)->getStatByLinkId($shortLinkId2);
+        $statDataLinkIdFirst = resolve(StatService::class)->getByLink($shortLinkId1);
+        $statDataLinkIdSecond = resolve(StatService::class)->getByLink($shortLinkId2);
 
         $statDataLinkIdByDateFirst = $statDataLinkIdFirst->where('date', '2022-01-01')->first();
         $statDataLinkIdByDateSecond = $statDataLinkIdSecond->where('date', '2022-01-02')->first();

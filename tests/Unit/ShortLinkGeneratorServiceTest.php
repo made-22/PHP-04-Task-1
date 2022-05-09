@@ -16,6 +16,6 @@ class ShortLinkGeneratorServiceTest extends TestCase
 
         $this->assertTrue(is_string($shortLink));
 
-        $this->assertTrue(strlen($shortLink) === ShortLinkGeneratorService::SHORT_LINK_LENGTH);
+        $this->assertEquals(ShortLinkGeneratorService::SHORT_LINK_LENGTH, strlen($shortLink));
     }
 }

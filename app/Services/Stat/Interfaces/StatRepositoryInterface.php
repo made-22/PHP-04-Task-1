@@ -11,16 +11,16 @@ interface StatRepositoryInterface
      * @param StatAddDTO $statData
      * @return void
      */
-    public function storeToDB(StatAddDTO $statData): void;
+    public function store(StatAddDTO $statData): void;
 
     /**
      * @return Collection
      */
-    public function getStat(): Collection;
+    public function getList(): Collection;
 
     /**
      * @param string $id
      * @return Collection
      */
-    public function getStatByLinkId(string $id): Collection;
+    public function getByLink(string $id): Collection;
 }

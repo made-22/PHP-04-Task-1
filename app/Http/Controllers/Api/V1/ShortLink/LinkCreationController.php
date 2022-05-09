@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\V1\ShortLink;
 
-use App\Exceptions\ShortLink\CantStoreShortLinksException;
 use App\Http\Controllers\Api\V1\ApiV1BaseController;
 use App\Http\Requests\Api\V1\LinkCreationRequest;
 use App\Http\Resources\Api\V1\ShortLinkBaseDataCollection;
@@ -21,7 +20,6 @@ class LinkCreationController extends ApiV1BaseController
      * @param ShortLinkService $shortLinkService
      * @return JsonResponse
      * @throws BindingResolutionException
-     * @throws CantStoreShortLinksException
      * @throws UnknownProperties
      */
     public function __invoke(
@@ -29,11 +27,16 @@ class LinkCreationController extends ApiV1BaseController
         ShortLinkGeneratorService $shortLinkGeneratorService,
         ShortLinkService $shortLinkService
     ): JsonResponse {
+        $linkIds = $shortLinkService->makeLinks(
+            $request->data()
+        );
+
+        if (empty($linkIds)) {
+            abort(Response::HTTP_UNPROCESSABLE_ENTITY, __('exceptions.cant_store_links'));
+        }
 
         $createdResourceCollection = new ShortLinkBaseDataCollection(
-            $shortLinkService->getGeneratedLinks(
-                $request->data()
-            )
+            $shortLinkService->getLinksWithBaseDataByIds($linkIds)
         );
 
         return $createdResourceCollection

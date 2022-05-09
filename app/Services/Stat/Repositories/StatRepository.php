@@ -14,7 +14,7 @@ final class StatRepository implements StatRepositoryInterface
      * @param StatAddDTO $statData
      * @return void
      */
-    public function storeToDB(StatAddDTO $statData): void
+    public function store(StatAddDTO $statData): void
     {
         Stat::query()
             ->create([
@@ -27,7 +27,7 @@ final class StatRepository implements StatRepositoryInterface
     /**
      * @return Collection
      */
-    public function getStat(): Collection
+    public function getList(): Collection
     {
         return Stat::query()
             ->select([
@@ -44,7 +44,7 @@ final class StatRepository implements StatRepositoryInterface
      * @param string $id
      * @return Collection
      */
-    public function getStatByLinkId(string $id): Collection
+    public function getByLink(string $id): Collection
     {
         return Stat::query()
             ->select([

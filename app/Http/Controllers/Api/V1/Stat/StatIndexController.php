@@ -11,7 +11,7 @@ class StatIndexController extends ApiV1BaseController
     public function __invoke(StatService $statService): StatCollection
     {
        return new StatCollection(
-           $statService->getStat()
+           $statService->get()
        );
     }
 }

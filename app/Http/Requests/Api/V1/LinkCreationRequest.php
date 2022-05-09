@@ -20,7 +20,7 @@ class LinkCreationRequest extends FormRequest
             '*.long_url' => [
                 'required',
                 'url',
-                new CorrectUrlRule()
+                new CorrectUrlRule
             ],
             '*.title' => [
                 'string',
@@ -47,8 +47,10 @@ class LinkCreationRequest extends FormRequest
         $data = [];
 
         foreach ($this->json->all() as $item) {
+            $generatorService = app()->make(ShortLinkGeneratorService::class);
+
             $data[] = new LinkCreateDTO([
-                'shortUrl' => app()->make(ShortLinkGeneratorService::class)->generate(),
+                'shortUrl' => $generatorService->generate(),
                 'longUrl' => $item['long_url'],
                 'title' => $item['title'] ?? null,
                 'tags' => $item['tags'] ?? null

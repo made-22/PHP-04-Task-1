@@ -15,6 +15,6 @@ class StatShowController extends ApiV1BaseController
      */
     public function __invoke(string $id, StatService $statService): StatCollection
     {
-        return new StatCollection($statService->getStatByLinkId($id));
+        return new StatCollection($statService->getByLink($id));
     }
 }

@@ -24,42 +24,44 @@ class ShortLinkService
 
     /**
      * @param LinkCreateDTO[] $data
-     * @throws CantStoreShortLinksException
      */
-    public function getGeneratedLinks(array $data): Collection
+    public function makeLinks(array $data): array
     {
-        $storedLinksIds = $this->storeLinks($data);
-
-        if (empty($storedLinksIds)) {
-            throw new CantStoreShortLinksException(__('exceptions.cant_store_links'));
-        }
-
-        return $this->repository->getLinksBaseDataByIds($storedLinksIds);
+        return $this->storeLinks($data);
     }
 
     /**
      * @param string $id
      * @return ShortLink
      */
-    public function getLink(string $id): ShortLink
+    public function show(string $id): ShortLink
     {
-        return $this->repository->getLink($id);
+        return $this->repository->getById($id);
     }
 
     /**
      * @param string $id
      * @return ShortLink
      */
-    public function getLinkBaseData(string $id): ShortLink
+    public function getLinkWithBaseData(string $id): ShortLink
     {
-        return $this->repository->getLinkBaseData($id);
+        return $this->repository->getLinkWithBaseData($id);
+    }
+
+    /**
+     * @param string[] $ids
+     * @return Collection
+     */
+    public function getLinksWithBaseDataByIds(array $ids): Collection
+    {
+        return $this->repository->getLinksWithBaseDataByIds($ids);
     }
 
     /**
      * @param LinkFilterDTO $filterData
      * @return Collection
      */
-    public function getLinks(LinkFilterDTO $filterData): Collection
+    public function getList(LinkFilterDTO $filterData): Collection
     {
         return $this->repository->getLinks($filterData);
     }

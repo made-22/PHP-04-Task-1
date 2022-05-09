@@ -16,7 +16,7 @@ class LinkShowController extends ApiV1BaseController
     public function __invoke(string $id, ShortLinkService $shortLinkService): ShortLinkResource
     {
         return new ShortLinkResource(
-            $shortLinkService->getLink($id)
+            $shortLinkService->show($id)
         );
     }
 }

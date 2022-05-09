@@ -19,7 +19,7 @@ class LinkIndexController extends ApiV1BaseController
     public function __invoke(LinkIndexRequest $request, ShortLinkService $shortLinkService): ShortLinkCollection
     {
         return new ShortLinkCollection(
-            $shortLinkService->getLinks(
+            $shortLinkService->getList(
                 $request->data()
             )
         );

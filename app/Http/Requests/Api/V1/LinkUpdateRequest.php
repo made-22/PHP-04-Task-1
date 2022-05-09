@@ -15,7 +15,7 @@ class LinkUpdateRequest extends FormRequest
         return [
             'long_url' => [
                 'url',
-                new CorrectUrlRule()
+                new CorrectUrlRule
             ],
             'title' => [
                 'string',
