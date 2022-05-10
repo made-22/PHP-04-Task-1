@@ -41,7 +41,7 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', false),
+    'debug' => (bool)env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -177,6 +177,11 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        /**
+         * Application Custom Service Providers...
+         */
+        App\Providers\ShortLink\ShortLinkServiceProvider::class,
+        App\Providers\Stat\StatServiceProvider::class,
     ],
 
     /*

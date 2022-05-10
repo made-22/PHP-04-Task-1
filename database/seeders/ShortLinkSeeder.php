@@ -2,18 +2,16 @@
 
 namespace Database\Seeders;
 
+use App\Models\ShortLink;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+class ShortLinkSeeder extends Seeder
 {
     /**
      * @return void
      */
     public function run(): void
     {
-        $this->call([
-            ShortLinkSeeder::class,
-            StatSeeder::class,
-        ]);
+        ShortLink::factory(10)->create();
     }
 }
