@@ -45,10 +45,9 @@ class LinkCreationRequest extends FormRequest
     public function data(): array
     {
         $data = [];
+        $generatorService = app()->make(ShortLinkGeneratorService::class);
 
         foreach ($this->json->all() as $item) {
-            $generatorService = app()->make(ShortLinkGeneratorService::class);
-
             $data[] = new LinkCreateDTO([
                 'shortUrl' => $generatorService->generate(),
                 'longUrl' => $item['long_url'],

@@ -36,7 +36,7 @@ class LinkCreationController extends ApiV1BaseController
         }
 
         $createdResourceCollection = new ShortLinkBaseDataCollection(
-            $shortLinkService->getLinksWithBaseDataByIds($linkIds)
+            $shortLinkService->getListByIds($linkIds)
         );
 
         return $createdResourceCollection

@@ -29,20 +29,10 @@ final class ShortLinkRepository implements ShortLinkRepositoryInterface
     }
 
     /**
-     * @param string $id
-     * @return ShortLink
-     */
-    public function getLinkWithBaseData(string $id): ShortLink
-    {
-        return ShortLink::query()
-            ->findOrFail($id, ['id', 'long_url']);
-    }
-
-    /**
      * @param string[] $ids
      * @return Collection
      */
-    public function getLinksWithBaseDataByIds(array $ids): Collection
+    public function getByIds(array $ids): Collection
     {
         return ShortLink::query()
             ->select(['id', 'long_url'])

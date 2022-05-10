@@ -40,21 +40,12 @@ class ShortLinkService
     }
 
     /**
-     * @param string $id
-     * @return ShortLink
-     */
-    public function getLinkWithBaseData(string $id): ShortLink
-    {
-        return $this->repository->getLinkWithBaseData($id);
-    }
-
-    /**
      * @param string[] $ids
      * @return Collection
      */
-    public function getLinksWithBaseDataByIds(array $ids): Collection
+    public function getListByIds(array $ids): Collection
     {
-        return $this->repository->getLinksWithBaseDataByIds($ids);
+        return $this->repository->getByIds($ids);
     }
 
     /**

@@ -90,24 +90,6 @@ class ShortLinkServiceTest extends TestCase
     }
 
     /**
-     * @return void
-     */
-    public function test_get_link_base_data(): void
-    {
-        $data = [
-            'id' => resolve(ShortLinkGeneratorService::class)->generate(),
-            'long_url' => 'https://laravel.com/',
-        ];
-
-        ShortLink::factory()->createOne($data);
-
-        $shortLinkData = resolve(ShortLinkService::class)->getLinkWithBaseData($data['id']);
-
-        $this->assertEquals($data['id'], $shortLinkData->id);
-        $this->assertEquals($data['long_url'], $shortLinkData->long_url);
-    }
-
-    /**
      * @throws UnknownProperties
      */
     public function test_get_links(): void

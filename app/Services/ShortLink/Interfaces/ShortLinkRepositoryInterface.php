@@ -16,16 +16,10 @@ interface ShortLinkRepositoryInterface
     public function getById(string $id): ShortLink;
 
     /**
-     * @param string $id
-     * @return ShortLink
-     */
-    public function getLinkWithBaseData(string $id): ShortLink;
-
-    /**
      * @param string[] $ids
      * @return Collection
      */
-    public function getLinksWithBaseDataByIds(array $ids): Collection;
+    public function getByIds(array $ids): Collection;
 
     /**
      * @param LinkFilterDTO $filterData

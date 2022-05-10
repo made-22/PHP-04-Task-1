@@ -20,7 +20,7 @@ class LinkRedirectController
         StatService $statService,
         ShortLinkService $shortLinkService
     ): RedirectResponse {
-        $linkData = $shortLinkService->getLinkWithBaseData($id);
+        $linkData = $shortLinkService->show($id);
 
         $statService->add($request->data());
 
